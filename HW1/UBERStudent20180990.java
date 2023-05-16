@@ -24,10 +24,12 @@ public class UBERStudent20180990 {
     		private Text outputValue = new Text();
 
     		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-			String region = value.toString().split(",")[0];
-			String date = value.toString().split(",")[1];
-			String data = value.toString().split(",")[2] + "," + value.toString().split(",")[3]; 
-			//System.out.println(data);
+			StringTokenizer itr = new StringTokenizer(value.toString(), ",");
+
+			String region = itr.nextToken().trim();
+			String date = itr.nextToken().trim();
+			String vehicles = itr.nextToken().trim();
+			String trips = itr.nextToken().trim();
 
 			int m = Integer.parseInt(date.split("/")[0]);
 			int d = Integer.parseInt(date.split("/")[1]);
@@ -38,13 +40,17 @@ public class UBERStudent20180990 {
 			DayOfWeek dayOfWeek = ld.getDayOfWeek(); // DayOfWeek
 
 			String day = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US).toUpperCase();
+			if (day.equals("THU")) {
+				day = "THR";
+			}
 			//System.out.println(day);
 			
 			String str = region + "," + day;
 			//System.out.println(str);
             		word.set(str);
 
-        		outputValue.set(data);
+			//System.out.println(trips+","+vehicles);
+        		outputValue.set(trips+","+vehicles);
        			context.write(word, outputValue);
 
     		}
@@ -65,7 +71,8 @@ public class UBERStudent20180990 {
 				tripSum += Integer.parseInt(data[0]);
 				vehicleSum += Integer.parseInt(data[1]);
                     	}
-			String outputValue = String.format("%d,%d", tripSum, vehicleSum); 
+
+			String outputValue = String.format("%d,%d", vehicleSum, tripSum);
 			result.set(outputValue);
                     	context.write(key, result);
             	}
